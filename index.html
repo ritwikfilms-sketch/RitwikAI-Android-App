@@ -1,134 +1,215 @@
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ritwik AI Assistant</title>
+<title>Ritwik AI Ultra</title>
 
 <style>
+*{margin:0;padding:0;box-sizing:border-box;}
 body{
-margin:0;
-font-family:Arial, sans-serif;
-background:#0f172a;
+height:100vh;
 display:flex;
 flex-direction:column;
-height:100vh;
+font-family:'Segoe UI',sans-serif;
+background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);
+color:white;
+overflow:hidden;
+}
+
+header{
+padding:15px;
+text-align:center;
+font-weight:bold;
+font-size:18px;
+background:rgba(255,255,255,0.05);
+backdrop-filter:blur(20px);
+border-bottom:1px solid rgba(255,255,255,0.1);
+text-shadow:0 0 10px #00f2ff;
 }
 
 #chat{
 flex:1;
 padding:15px;
 overflow-y:auto;
+display:flex;
+flex-direction:column;
 }
 
 .message{
+padding:12px 16px;
 margin:8px 0;
-padding:10px 14px;
-border-radius:15px;
+border-radius:18px;
 max-width:75%;
-word-wrap:break-word;
+animation:fadeIn 0.3s ease-in-out;
+backdrop-filter:blur(15px);
+border:1px solid rgba(255,255,255,0.1);
 }
 
 .user{
-background:#3b82f6;
-color:white;
-margin-left:auto;
+align-self:flex-end;
+background:rgba(0,255,255,0.2);
+box-shadow:0 0 10px #00f2ff;
 }
 
 .bot{
-background:#1e293b;
-color:white;
-margin-right:auto;
+align-self:flex-start;
+background:rgba(255,255,255,0.08);
+box-shadow:0 0 8px rgba(255,255,255,0.3);
 }
 
 #inputArea{
 display:flex;
-padding:10px;
-background:#111827;
+padding:12px;
+background:rgba(0,0,0,0.4);
+backdrop-filter:blur(15px);
+border-top:1px solid rgba(255,255,255,0.1);
 }
 
 input{
 flex:1;
-padding:10px;
+padding:12px;
 border:none;
-border-radius:10px;
+border-radius:12px;
 outline:none;
+background:rgba(255,255,255,0.1);
+color:white;
 }
 
 button{
 margin-left:8px;
-padding:10px 15px;
-background:#22c55e;
+padding:12px 16px;
 border:none;
-border-radius:10px;
-color:white;
+border-radius:12px;
+background:linear-gradient(45deg,#00f2ff,#00ff88);
+color:black;
+font-weight:bold;
 cursor:pointer;
+transition:0.3s;
+}
+
+button:hover{
+transform:scale(1.05);
+box-shadow:0 0 10px #00f2ff;
+}
+
+.typing{
+width:60px;
+display:flex;
+justify-content:space-between;
+}
+
+.dot{
+width:8px;
+height:8px;
+background:white;
+border-radius:50%;
+animation:blink 1.4s infinite both;
+}
+
+.dot:nth-child(2){animation-delay:.2s;}
+.dot:nth-child(3){animation-delay:.4s;}
+
+@keyframes blink{
+0%{opacity:.2;}
+20%{opacity:1;}
+100%{opacity:.2;}
+}
+
+@keyframes fadeIn{
+from{opacity:0;transform:translateY(5px);}
+to{opacity:1;transform:translateY(0);}
+}
+
+/* Ad Banner Placeholder */
+#adBanner{
+height:50px;
+background:black;
+text-align:center;
+line-height:50px;
+font-size:14px;
+color:#00f2ff;
+border-top:1px solid rgba(255,255,255,0.1);
 }
 </style>
 </head>
 
 <body>
 
+<header>🤖 Ritwik AI – Ultra Mode 🚀</header>
+
 <div id="chat"></div>
 
 <div id="inputArea">
-<input id="input" placeholder="Type your message..." />
+<input id="input" placeholder="Ask anything..." />
 <button onclick="sendMessage()">Send</button>
+<button onclick="startVoice()">🎤</button>
 </div>
 
+<div id="adBanner">AdMob Banner Area</div>
+
 <script>
+const chat=document.getElementById("chat");
 
-const chat = document.getElementById("chat");
-
-window.onload = function() {
-addMessage("Hello Ritwik 👋 I am your Real AI Assistant 🚀", "bot");
+window.onload=function(){
+addMessage("Welcome Ritwik 👋 Ultra AI Activated 🚀","bot");
 };
 
-async function sendMessage() {
-const input = document.getElementById("input");
-const text = input.value.trim();
-if (!text) return;
+function sendMessage(){
+const input=document.getElementById("input");
+const text=input.value.trim();
+if(!text)return;
 
-addMessage(text, "user");
-input.value = "";
+addMessage(text,"user");
+input.value="";
+showTyping();
 
-const reply = await getBotReply(text);
-addMessage(reply, "bot");
+setTimeout(()=>{
+removeTyping();
+addMessage("AI Demo Reply 🤖: "+text,"bot");
+},1200);
 }
 
-function addMessage(text, sender) {
-const msg = document.createElement("div");
-msg.className = "message " + sender;
-msg.innerText = text;
+function addMessage(text,sender){
+const msg=document.createElement("div");
+msg.className="message "+sender;
+msg.innerText=text;
 chat.appendChild(msg);
-chat.scrollTop = chat.scrollHeight;
+chat.scrollTop=chat.scrollHeight;
 }
 
-async function getBotReply(message) {
-try {
-const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-method: "POST",
-headers: {
-"Content-Type": "application/json",
-"Authorization": "Bearer gsk..........."
-},
-body: JSON.stringify({
-model: "llama3-8b-8192",
-messages: [
-{ role: "system", content: "You are a powerful AI assistant." },
-{ role: "user", content: message }
-]
-})
-});
-
-const data = await response.json();
-return data.choices[0].message.content;
-
-} catch (error) {
-return "Error connecting to AI 😢";
-}
+function showTyping(){
+const typing=document.createElement("div");
+typing.className="message bot";
+typing.id="typing";
+typing.innerHTML=`<div class="typing">
+<div class="dot"></div>
+<div class="dot"></div>
+<div class="dot"></div>
+</div>`;
+chat.appendChild(typing);
+chat.scrollTop=chat.scrollHeight;
 }
 
+function removeTyping(){
+const typing=document.getElementById("typing");
+if(typing)typing.remove();
+}
+
+/* Voice */
+function startVoice(){
+if (!('webkitSpeechRecognition' in window)) {
+alert("Voice not supported");
+return;
+}
+const recognition = new webkitSpeechRecognition();
+recognition.lang="en-US";
+recognition.start();
+recognition.onresult=function(event){
+document.getElementById("input").value=
+event.results[0][0].transcript;
+};
+}
 </script>
 
 </body>
