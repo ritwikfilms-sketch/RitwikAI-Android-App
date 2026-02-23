@@ -3,57 +3,72 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ritwik AI</title>
+<title>Ritwik AI Assistant</title>
 
 <style>
 body {
     margin:0;
     font-family: Arial, sans-serif;
     background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-    color:white;
     display:flex;
-    flex-direction:column;
+    justify-content:center;
+    align-items:center;
     height:100vh;
 }
 
-header{
+.container {
+    width:95%;
+    max-width:500px;
+    height:90vh;
+    background:#111;
+    border-radius:15px;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+    box-shadow:0 0 25px rgba(0,0,0,0.5);
+}
+
+header {
+    padding:15px;
     text-align:center;
-    padding:15px;
-    font-size:22px;
+    font-size:20px;
     font-weight:bold;
-    background:rgba(0,0,0,0.3);
+    background:#1e1e1e;
+    color:#00ffcc;
 }
 
-#chat{
+#chat {
     flex:1;
-    overflow-y:auto;
     padding:15px;
+    overflow-y:auto;
 }
 
-.message{
+.message {
     margin:10px 0;
     padding:10px 15px;
     border-radius:12px;
     max-width:80%;
 }
 
-.user{
-    background:#00c6ff;
-    align-self:flex-end;
+.user {
+    background:#00ffcc;
     color:black;
+    align-self:flex-end;
 }
 
-.bot{
-    background:#1e90ff;
+.bot {
+    background:#333;
+    color:white;
+    align-self:flex-start;
 }
 
-#inputArea{
+.input-area {
     display:flex;
     padding:10px;
-    background:rgba(0,0,0,0.4);
+    background:#1e1e1e;
 }
 
-input{
+input {
     flex:1;
     padding:10px;
     border:none;
@@ -61,60 +76,58 @@ input{
     outline:none;
 }
 
-button{
+button {
     margin-left:10px;
     padding:10px 15px;
     border:none;
     border-radius:8px;
     background:#00ffcc;
-    font-weight:bold;
     cursor:pointer;
+    font-weight:bold;
 }
 </style>
 </head>
 
 <body>
 
-<header>🤖 Ritwik AI Assistant</header>
+<div class="container">
+    <header>🤖 Ritwik AI Assistant</header>
 
-<div id="chat"></div>
+    <div id="chat"></div>
 
-<div id="inputArea">
-<input type="text" id="userInput" placeholder="Type your message...">
-<button onclick="sendMessage()">Send</button>
+    <div class="input-area">
+        <input type="text" id="input" placeholder="Type your message...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
 </div>
 
 <script>
-function sendMessage(){
-    const input = document.getElementById("userInput");
+function sendMessage() {
+    const input = document.getElementById("input");
     const text = input.value.trim();
-    if(text==="") return;
+    if (!text) return;
 
-    addMessage(text,"user");
-    input.value="";
+    addMessage(text, "user");
+    input.value = "";
 
-    setTimeout(()=>{
-        addMessage(generateReply(text),"bot");
-    },500);
+    let reply = getBotReply(text);
+    setTimeout(() => addMessage(reply, "bot"), 500);
 }
 
-function addMessage(text,type){
-    const chat=document.getElementById("chat");
-    const msg=document.createElement("div");
-    msg.className="message "+type;
-    msg.innerText=text;
+function addMessage(text, sender) {
+    const chat = document.getElementById("chat");
+    const msg = document.createElement("div");
+    msg.className = "message " + sender;
+    msg.innerText = text;
     chat.appendChild(msg);
-    chat.scrollTop=chat.scrollHeight;
+    chat.scrollTop = chat.scrollHeight;
 }
 
-function generateReply(text){
-    text=text.toLowerCase();
-
-    if(text.includes("hello")) return "Hello Ritwik 👋 How can I help you?";
-    if(text.includes("who are you")) return "I am Ritwik AI 🤖 Your smart assistant.";
-    if(text.includes("bye")) return "Goodbye! Have a great day 🚀";
-    
-    return "You said: "+text;
+function getBotReply(text) {
+    text = text.toLowerCase();
+    if (text.includes("hello")) return "Hello Ritwik 👋 How can I help you?";
+    if (text.includes("bye")) return "Goodbye! Have a great day 🚀";
+    return "You said: " + text;
 }
 </script>
 
