@@ -1,85 +1,98 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Ritwik AI Assistant</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ritwik AI Assistant</title>
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #0f172a;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-    }
+<style>
+body {
+  margin:0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
 
-    #chat {
-      flex: 1;
-      padding: 15px;
-      overflow-y: auto;
-    }
+.container {
+  width:95%;
+  max-width:500px;
+  height:90vh;
+  background:#111;
+  border-radius:15px;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
 
-    .message {
-      margin: 8px 0;
-      padding: 10px 14px;
-      border-radius: 15px;
-      max-width: 75%;
-      word-wrap: break-word;
-    }
+#chat {
+  flex:1;
+  padding:15px;
+  overflow-y:auto;
+  display:flex;
+  flex-direction:column;
+}
 
-    .user {
-      background: #3b82f6;
-      color: white;
-      margin-left: auto;
-    }
+.message {
+  margin:10px 0;
+  padding:10px 15px;
+  border-radius:12px;
+  max-width:80%;
+}
 
-    .bot {
-      background: #1e293b;
-      color: white;
-      margin-right: auto;
-    }
+.user {
+  background:#00ffcc;
+  color:black;
+  align-self:flex-end;
+}
 
-    #inputArea {
-      display: flex;
-      padding: 10px;
-      background: #111827;
-    }
+.bot {
+  background:#333;
+  color:white;
+  align-self:flex-start;
+}
 
-    #input {
-      flex: 1;
-      padding: 10px;
-      border-radius: 10px;
-      border: none;
-      outline: none;
-    }
+#inputArea {
+  display:flex;
+  padding:10px;
+  background:#1e1e1e;
+}
 
-    button {
-      margin-left: 8px;
-      padding: 10px 15px;
-      border-radius: 10px;
-      border: none;
-      background: #22c55e;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-    }
-  </style>
+#input {
+  flex:1;
+  padding:10px;
+  border:none;
+  border-radius:8px;
+}
+
+button {
+  margin-left:10px;
+  padding:10px 15px;
+  border:none;
+  border-radius:8px;
+  background:#22c55e;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+}
+</style>
 </head>
 
 <body>
 
-<div id="chat"></div>
+<div class="container">
+  <div id="chat"></div>
 
-<div id="inputArea">
-  <input id="input" placeholder="Type your message..." />
-  <button onclick="sendMessage()">Send</button>
+  <div id="inputArea">
+    <input id="input" placeholder="Type your message..." />
+    <button onclick="sendMessage()">Send</button>
+  </div>
 </div>
 
 <script>
-
 const BASE_URL = "https://ritwikai-backend-production.up.railway.app";
-
 const chat = document.getElementById("chat");
 
 window.onload = function() {
@@ -94,33 +107,8 @@ async function sendMessage() {
   addMessage(text, "user");
   input.value = "";
 
-  showTyping();
-
   const reply = await getBotReply(text);
-
-  removeTyping();
   addMessage(reply, "bot");
-}
-
-async function getBotReply(message) {
-  try {
-    const response = await fetch(BASE_URL + "/chat", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        message: message
-      })
-    });
-
-    const data = await response.json();
-    return data.choices[0].message.content;
-
-  } catch (error) {
-    console.error(error);
-    return "Server Error 😢";
-  }
 }
 
 function addMessage(text, sender) {
@@ -131,20 +119,18 @@ function addMessage(text, sender) {
   chat.scrollTop = chat.scrollHeight;
 }
 
-function showTyping() {
-  const typing = document.createElement("div");
-  typing.className = "message bot";
-  typing.id = "typing";
-  typing.innerText = "Ritwik AI is thinking...";
-  chat.appendChild(typing);
-  chat.scrollTop = chat.scrollHeight;
-}
+async function getBotReply(message) {
+  const response = await fetch(BASE_URL + "/chat", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ message })
+  });
 
-function removeTyping() {
-  const typing = document.getElementById("typing");
-  if (typing) typing.remove();
+  const data = await response.json();
+  return data.reply || "Error getting reply";
 }
-
 </script>
 
 </body>
